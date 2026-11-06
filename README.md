@@ -54,13 +54,13 @@
 
 ### Linux / macOS
 ```bash
-git clone https://github.com/<your-username>/maniplot.git ~/maniplot
+git clone https://github.com/langxin11/maniplot.git ~/maniplot
 python3 ~/maniplot/setup_env.py
 ```
 
 ### Windows (PowerShell / CMD / Anaconda Prompt)
 ```powershell
-git clone https://github.com/<your-username>/maniplot.git "$HOME\maniplot"
+git clone https://github.com/langxin11/maniplot.git "$HOME\maniplot"
 python "$HOME\maniplot\setup_env.py"
 ```
 
