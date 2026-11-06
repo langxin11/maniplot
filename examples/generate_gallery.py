@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "matplotlib>=3.5.0",
+#     "numpy>=1.20.0",
+# ]
+# ///
 """Generate publication-ready showcase gallery for maniplot (IEEE & Chinese Master's Thesis)."""
 
 from __future__ import annotations

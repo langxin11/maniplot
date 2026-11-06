@@ -52,17 +52,25 @@
 
 无论你在 **Ubuntu 工控机/服务器** 还是 **Windows 笔记本** 上，只需克隆仓库并运行一键配置脚本 [`setup_env.py`](setup_env.py)（零外部依赖，自动完成 Python 环境注册与全局 AI Agent Skill 链接）：
 
-### Linux / macOS
+### Linux / macOS（推荐使用 `uv`）
 ```bash
 git clone https://github.com/langxin11/maniplot.git ~/maniplot
-python3 ~/maniplot/setup_env.py
+uv run ~/maniplot/setup_env.py
+# 或者使用系统 Python：python3 ~/maniplot/setup_env.py
 ```
 
-### Windows (PowerShell / CMD / Anaconda Prompt)
+### Windows (PowerShell / CMD)
 ```powershell
 git clone https://github.com/langxin11/maniplot.git "$HOME\maniplot"
-python "$HOME\maniplot\setup_env.py"
+uv run "$HOME\maniplot\setup_env.py"
+# 或者使用系统 Python：python "$HOME\maniplot\setup_env.py"
 ```
+
+### ⚡ 为什么强烈推荐搭配 `uv run` 运行画图脚本？
+做机器人实验时，你经常处于纯 C++ 的 **ROS 2 工作空间（`colcon_ws`）**，或是尚未安装 `matplotlib` 的 **Conda `base` 环境**（传统 `python plot.py` 极易报 `ModuleNotFoundError`）。
+`maniplot` 的 Agent Skill 原生内置了 **PEP 723 单文件脚本依赖规范（`# /// script`）**：
+- Agent 生成任何画图脚本后，会自动通过 **`uv run plot_xxx.py`** 执行；
+- `uv` 会在毫秒级内复用全局缓存中的 `matplotlib` + `numpy` 环境并自动加载 `~/maniplot`，**既不污染你的 ROS 2 / Conda 环境，又彻底杜绝“换个虚拟环境就缺包报错”的痛点！**
 
 > **跨平台（Windows/Linux）与多 Agent（Codex / Claude / Gemini / Cursor）全兼容设计**：
 > - **全主流 AI Agent 自动挂载**：运行 `setup_env.py` 会一次性将 `SKILL.md` 自动挂载到：

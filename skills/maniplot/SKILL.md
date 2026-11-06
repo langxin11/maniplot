@@ -11,11 +11,19 @@ description: >-
 
 Whenever the user asks to plot data, generate figures, or visualize experimental results, you **MUST** follow the `maniplot` publication standards below instead of writing ad-hoc Matplotlib styling boilerplate.
 
-## 1. Quick Setup & Cross-Platform Library Import (Windows & Linux)
+## 1. Quick Setup, `uv` Script Execution & Cross-Platform Import (Windows & Linux)
 
-`maniplot` is registered across Python environments and supports both **Windows** and **Linux**. Always import it at the top of your plotting script (with a cross-platform `Path.home() / "maniplot"` fallback in case a fresh virtualenv is used):
+`maniplot` supports both **Windows** and **Linux**. Because robotics workspaces (e.g., C++ ROS 2 `colcon` workspaces or bare Conda `base` environments) often lack `matplotlib` in their active Python interpreter, **prefer running plotting scripts with `uv run`** and including a **PEP 723 `# /// script` header** at the top of every plotting script you create:
 
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "matplotlib>=3.7.0",
+#     "numpy>=1.22.0",
+# ]
+# ///
 import sys
 from pathlib import Path
 
@@ -27,6 +35,10 @@ import maniplot as mplt
 import matplotlib.pyplot as plt
 import numpy as np
 ```
+
+### How to Execute Plotting Scripts
+- **Primary (Recommended)**: Run with `uv run plot_script.py` (automatically provisions an isolated cached environment with `matplotlib` and `numpy` in milliseconds without polluting the user's ROS 2 or Conda environment).
+- **Fallback**: If `uv` is not in `PATH`, check `~/.local/bin/uv` or fall back to `python3 plot_script.py` / `python plot_script.py`.
 
 When loading CSV logs exported from either Windows (Excel/MATLAB `utf-8-sig` BOM or `gbk`) or Linux (ROS 2 / Franka FCI `utf-8`), prefer `mplt.load_csv(path)` to avoid cross-platform encoding or header whitespace errors:
 ```python
