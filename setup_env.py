@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Cross-platform (Windows & Linux & macOS) one-click installer for maniplot & AI Agent Skill."""
+"""Cross-platform (Windows & Linux & macOS) and Multi-Agent installer for maniplot.
+
+Automatically registers:
+1. Python package path (`maniplot.pth`) across system/user/conda site-packages.
+2. Global AI Agent Skill (`skills/maniplot/SKILL.md`) across ALL mainstream coding agents:
+   - Google Antigravity / Gemini CLI (`~/.gemini/config/skills/maniplot`)
+   - OpenAI Codex (`~/.codex/skills/maniplot`)
+   - Anthropic Claude Code (`~/.claude/skills/maniplot`)
+   - Universal Agent Skills Standard (`~/.agents/skills/maniplot` for Cursor / Windsurf / OpenCode)
+"""
 
 from __future__ import annotations
 
@@ -13,7 +22,13 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent
 SKILL_SRC = REPO_ROOT / "skills" / "maniplot"
-SKILL_DST = Path.home() / ".gemini" / "config" / "skills" / "maniplot"
+
+AGENT_SKILL_TARGETS = [
+    ("Antigravity / Gemini", Path.home() / ".gemini" / "config" / "skills" / "maniplot"),
+    ("OpenAI Codex", Path.home() / ".codex" / "skills" / "maniplot"),
+    ("Claude Code", Path.home() / ".claude" / "skills" / "maniplot"),
+    ("Universal (.agents)", Path.home() / ".agents" / "skills" / "maniplot"),
+]
 
 
 def register_python_pth() -> None:
@@ -47,24 +62,23 @@ def register_python_pth() -> None:
         print("[WARN] Could not write .pth file due to permissions. Try: pip install -e .")
 
 
-def install_global_skill() -> None:
-    """Link or copy `skills/maniplot` into `~/.gemini/config/skills/maniplot` across Windows & Linux."""
-    SKILL_DST.parent.mkdir(parents=True, exist_ok=True)
+def _link_or_copy_skill(agent_name: str, dst: Path) -> None:
+    """Link or copy `skills/maniplot` to a target agent's global skill directory."""
+    dst.parent.mkdir(parents=True, exist_ok=True)
 
-    if SKILL_DST.is_symlink() or SKILL_DST.exists():
-        if SKILL_DST.is_symlink() or SKILL_DST.is_file():
-            SKILL_DST.unlink()
+    if dst.is_symlink() or dst.exists():
+        if dst.is_symlink() or dst.is_file():
+            dst.unlink()
         else:
-            # On Windows, a directory junction can be unlinked with os.rmdir; normal dir with rmtree
             try:
-                os.rmdir(SKILL_DST)
+                os.rmdir(dst)
             except OSError:
-                shutil.rmtree(SKILL_DST)
+                shutil.rmtree(dst)
 
     # 1. Try native symlink (Linux / macOS / Windows with Developer Mode)
     try:
-        os.symlink(SKILL_SRC, SKILL_DST, target_is_directory=True)
-        print(f"[OK] Symlinked global Agent Skill: {SKILL_DST} -> {SKILL_SRC}")
+        os.symlink(SKILL_SRC, dst, target_is_directory=True)
+        print(f"[OK] [{agent_name}] Symlinked skill: {dst} -> {SKILL_SRC}")
         return
     except OSError:
         pass
@@ -72,21 +86,27 @@ def install_global_skill() -> None:
     # 2. On Windows without admin/Developer Mode, use NTFS Directory Junction (`mklink /J`)
     if platform.system().lower().startswith("win"):
         res = subprocess.run(
-            ["cmd", "/c", "mklink", "/J", str(SKILL_DST), str(SKILL_SRC)],
+            ["cmd", "/c", "mklink", "/J", str(dst), str(SKILL_SRC)],
             capture_output=True,
             text=True,
         )
         if res.returncode == 0:
-            print(f"[OK] Created Windows Directory Junction for Agent Skill: {SKILL_DST} -> {SKILL_SRC}")
+            print(f"[OK] [{agent_name}] Created Windows Junction: {dst} -> {SKILL_SRC}")
             return
 
     # 3. Fallback: copy directory tree
-    shutil.copytree(SKILL_SRC, SKILL_DST)
-    print(f"[OK] Copied global Agent Skill to: {SKILL_DST}")
+    shutil.copytree(SKILL_SRC, dst)
+    print(f"[OK] [{agent_name}] Copied skill to: {dst}")
+
+
+def install_all_agent_skills() -> None:
+    """Install the maniplot skill into all mainstream AI coding agent global directories."""
+    for agent_name, target_path in AGENT_SKILL_TARGETS:
+        _link_or_copy_skill(agent_name, target_path)
 
 
 if __name__ == "__main__":
     print(f"=== Setting up maniplot on {platform.system()} ({sys.executable}) ===")
     register_python_pth()
-    install_global_skill()
-    print("=== Setup complete! You can now `import maniplot as mplt` in any project. ===")
+    install_all_agent_skills()
+    print("=== Setup complete! All AI Agents & Python environments are ready. ===")

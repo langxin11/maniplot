@@ -64,9 +64,14 @@ git clone https://github.com/<your-username>/maniplot.git "$HOME\maniplot"
 python "$HOME\maniplot\setup_env.py"
 ```
 
-> **双端兼容性设计说明**：
+> **跨平台（Windows/Linux）与多 Agent（Codex / Claude / Gemini / Cursor）全兼容设计**：
+> - **全主流 AI Agent 自动挂载**：运行 `setup_env.py` 会一次性将 `SKILL.md` 自动挂载到：
+>   - **OpenAI Codex**：`~/.codex/skills/maniplot`
+>   - **Anthropic Claude Code**：`~/.claude/skills/maniplot`
+>   - **Google Antigravity / Gemini**：`~/.gemini/config/skills/maniplot`
+>   - **通用 Agent Skills 标准（Cursor / Windsurf / OpenCode）**：`~/.agents/skills/maniplot`
 > - **字体动态探测**：`mplt.use_style()` 会在运行时自动检测当前操作系统已安装的字体（Windows 自动命中 `Times New Roman` + `SimSun 中易宋体`；Linux 自动命中 `Liberation Serif` + `Noto Serif CJK 思源宋体`），绝不在跨端运行时抛出 `findfont` 警告或中文方框乱码。
-> - **Windows 免管理员权限挂载 Skill**：`setup_env.py` 在 Linux 下自动创建软链接（Symlink），在 Windows 下自动使用无需管理员权限的 NTFS 目录联接（`mklink /J`）挂载至 `%USERPROFILE%\.gemini\config\skills\maniplot`。
+> - **Windows 免管理员权限挂载 Skill**：`setup_env.py` 在 Linux 下自动创建软链接（Symlink），在 Windows 下自动使用无需管理员权限的 NTFS 目录联接（`mklink /J`）。
 > - **跨端 CSV 编码自动兼容**：提供 `headers, data = mplt.load_csv("log.csv")`，自动兼容 Windows Excel 导出的 `UTF-8-BOM` / `GBK` 与 Linux ROS 2 导出的 `UTF-8`。
 
 ---

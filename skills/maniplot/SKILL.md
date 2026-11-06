@@ -105,4 +105,4 @@ Prefer `maniplot`'s built-in primitives over writing raw matplotlib loops:
 
 ## 5. Pre-Delivery Verification Checklist
 
-Before finishing any plotting task, consult [checklist.md](./references/checklist.md) and inspect the generated `.png` image using `read_file` to verify there are no overlapping legends, clipped labels, or missing font glyphs.
+Before finishing any plotting task, consult [checklist.md](./references/checklist.md) and visually inspect the generated `.png` image using your file/image viewing tool (e.g., `read_file`, `Read`, or `view_image`) to verify there are no overlapping legends, clipped labels, or missing font glyphs.
