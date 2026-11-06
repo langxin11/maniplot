@@ -1,0 +1,67 @@
+# maniplot Chinese Master's / Doctoral Thesis Style (国内硕博学位论文标准)
+# 中文：宋体 (SimSun / Noto Serif CJK SC) | 英文与数字：Times New Roman (Liberation Serif) | 数学公式：STIX
+
+figure.facecolor: white
+figure.figsize: 5.5, 3.4
+figure.dpi: 150
+savefig.facecolor: white
+savefig.dpi: 600
+savefig.bbox: tight
+savefig.pad_inches: 0.04
+
+pdf.fonttype: 42
+ps.fonttype: 42
+svg.fonttype: none
+
+# Typography: SimSun / Source Han Serif (Noto Serif CJK) provides Songti Chinese + Serif Latin, while STIX renders math
+font.family: serif
+font.serif: SimSun, Songti SC, Noto Serif CJK SC, Noto Serif CJK JP, AR PL UMing CN, Times New Roman, Liberation Serif, DejaVu Serif
+font.sans-serif: SimHei, Microsoft YaHei, Noto Sans CJK SC, Noto Sans CJK JP, Liberation Sans, DejaVu Sans
+mathtext.fontset: stix
+font.size: 10.0
+axes.titlesize: 10.5
+axes.titleweight: bold
+axes.labelsize: 10.0
+xtick.labelsize: 9.0
+ytick.labelsize: 9.0
+legend.fontsize: 9.0
+figure.titlesize: 11.0
+axes.unicode_minus: False
+
+# Axes & Spines
+axes.facecolor: white
+axes.edgecolor: "#222222"
+axes.linewidth: 0.85
+axes.grid: True
+axes.axisbelow: True
+axes.prop_cycle: cycler('color', ['1F4E78', 'C0392B', '27AE60', '8E44AD', 'D35400', '2980B9', '2C3E50'])
+
+# Ticks (Inward ticks standard for Chinese engineering theses)
+xtick.direction: in
+ytick.direction: in
+xtick.top: True
+ytick.right: True
+xtick.major.size: 3.5
+ytick.major.size: 3.5
+xtick.minor.size: 1.8
+ytick.minor.size: 1.8
+xtick.major.width: 0.75
+ytick.major.width: 0.75
+xtick.minor.visible: True
+ytick.minor.visible: True
+
+# Grid
+grid.color: "#D0D5DD"
+grid.linestyle: --
+grid.linewidth: 0.55
+grid.alpha: 0.65
+
+# Lines & Legend
+lines.linewidth: 1.4
+lines.markersize: 5.0
+legend.frameon: True
+legend.facecolor: white
+legend.edgecolor: "#D0D5DD"
+legend.framealpha: 0.92
+legend.borderpad: 0.35
+legend.handlelength: 1.8

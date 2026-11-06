@@ -1,0 +1,55 @@
+# maniplot CoRL / RSS / Science Robotics Modern Sans-Serif Style
+# Clean despined top/right axes, Arial/Helvetica/Liberation Sans typography, NPG palette
+
+figure.facecolor: white
+figure.figsize: 3.5, 2.35
+figure.dpi: 150
+savefig.facecolor: white
+savefig.dpi: 600
+savefig.bbox: tight
+savefig.pad_inches: 0.03
+
+pdf.fonttype: 42
+ps.fonttype: 42
+svg.fonttype: none
+
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica, Liberation Sans, Nimbus Sans, Noto Sans CJK SC, DejaVu Sans
+mathtext.fontset: dejavusans
+font.size: 8.5
+axes.titlesize: 9.0
+axes.titleweight: bold
+axes.labelsize: 8.5
+xtick.labelsize: 7.5
+ytick.labelsize: 7.5
+legend.fontsize: 7.5
+figure.titlesize: 9.5
+axes.unicode_minus: False
+
+# Modern despined look
+axes.facecolor: white
+axes.edgecolor: "#333333"
+axes.linewidth: 0.8
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: True
+axes.axisbelow: True
+axes.prop_cycle: cycler('color', ['E64B35', '4DBBD5', '00A087', '3C5488', 'F39B7F', '8491B4', '91D1C2'])
+
+xtick.direction: out
+ytick.direction: out
+xtick.major.size: 3.0
+ytick.major.size: 3.0
+xtick.major.width: 0.7
+ytick.major.width: 0.7
+
+grid.color: "#E2E8F0"
+grid.linestyle: -
+grid.linewidth: 0.6
+grid.alpha: 0.8
+
+lines.linewidth: 1.4
+lines.markersize: 4.5
+legend.frameon: False
+legend.borderpad: 0.3
+legend.handlelength: 1.6
