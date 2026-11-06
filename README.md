@@ -48,23 +48,26 @@
 
 ---
 
-## 🚀 快速安装与挂载 (Installation & Agent Skill Setup)
+## 🚀 快速安装与挂载（Windows & Linux 双端通用）
 
-### 1. 安装 Python 包（可编辑模式，随时修改全局生效）
+无论你在 **Ubuntu 工控机/服务器** 还是 **Windows 笔记本** 上，只需克隆仓库并运行一键配置脚本 [`setup_env.py`](setup_env.py)（零外部依赖，自动完成 Python 环境注册与全局 AI Agent Skill 链接）：
 
+### Linux / macOS
 ```bash
 git clone https://github.com/<your-username>/maniplot.git ~/maniplot
-pip install -e ~/maniplot
+python3 ~/maniplot/setup_env.py
 ```
 
-### 2. 挂载为全局 AI Agent Skill（配置一次，所有项目永久生效）
-
-```bash
-mkdir -p ~/.gemini/config/skills
-ln -sf ~/maniplot/skills/maniplot ~/.gemini/config/skills/maniplot
+### Windows (PowerShell / CMD / Anaconda Prompt)
+```powershell
+git clone https://github.com/<your-username>/maniplot.git "$HOME\maniplot"
+python "$HOME\maniplot\setup_env.py"
 ```
 
-挂载完成后，无论你在哪个 ROS 2 工作空间、仿真环境或真机实验目录开启新对话，Agent 都会自动发现并遵循 `maniplot` 规范。
+> **双端兼容性设计说明**：
+> - **字体动态探测**：`mplt.use_style()` 会在运行时自动检测当前操作系统已安装的字体（Windows 自动命中 `Times New Roman` + `SimSun 中易宋体`；Linux 自动命中 `Liberation Serif` + `Noto Serif CJK 思源宋体`），绝不在跨端运行时抛出 `findfont` 警告或中文方框乱码。
+> - **Windows 免管理员权限挂载 Skill**：`setup_env.py` 在 Linux 下自动创建软链接（Symlink），在 Windows 下自动使用无需管理员权限的 NTFS 目录联接（`mklink /J`）挂载至 `%USERPROFILE%\.gemini\config\skills\maniplot`。
+> - **跨端 CSV 编码自动兼容**：提供 `headers, data = mplt.load_csv("log.csv")`，自动兼容 Windows Excel 导出的 `UTF-8-BOM` / `GBK` 与 Linux ROS 2 导出的 `UTF-8`。
 
 ---
 

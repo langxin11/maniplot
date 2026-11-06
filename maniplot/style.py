@@ -3,15 +3,30 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Iterable, Optional, Sequence, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
+import csv
 import matplotlib as mpl
+import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
+import numpy as np
 from cycler import cycler
 
 from .palettes import PALETTES
 
 STYLES_DIR = Path(__file__).resolve().parent / "styles"
+
+
+def _resolve_installed_fonts(candidates: Sequence[str], fallback: str = "DejaVu Serif") -> List[str]:
+    """Filter a font priority list down to fonts actually installed on the current OS (Windows/Linux/macOS).
+
+    Prevents Matplotlib `findfont` warnings and ensures clean fallback across Windows and Linux.
+    """
+    available = {f.name for f in fm.fontManager.ttflist}
+    resolved = [name for name in candidates if name in available]
+    if fallback in available and fallback not in resolved:
+        resolved.append(fallback)
+    return resolved or [fallback]
 
 # Exact physical dimensions in inches for robotics venues and theses
 FIGURE_WIDTHS: Dict[str, float] = {
@@ -98,6 +113,57 @@ def use_style(
         raise ValueError(f"Unknown preset '{preset}'. Choose from: {valid}")
 
     plt.style.use(str(style_map[key]))
+
+    # Dynamically filter font lists to only fonts installed on the current OS (Windows / Linux / macOS)
+    if key in ("cn_thesis", "thesis"):
+        mpl.rcParams["font.serif"] = _resolve_installed_fonts(
+            [
+                "SimSun",
+                "Songti SC",
+                "Noto Serif CJK SC",
+                "Noto Serif CJK JP",
+                "AR PL UMing CN",
+                "Times New Roman",
+                "Liberation Serif",
+                "DejaVu Serif",
+            ],
+            fallback="DejaVu Serif",
+        )
+        mpl.rcParams["font.sans-serif"] = _resolve_installed_fonts(
+            [
+                "SimHei",
+                "Microsoft YaHei",
+                "Noto Sans CJK SC",
+                "Noto Sans CJK JP",
+                "Liberation Sans",
+                "DejaVu Sans",
+            ],
+            fallback="DejaVu Sans",
+        )
+    elif key in ("corl", "rss", "nature"):
+        mpl.rcParams["font.sans-serif"] = _resolve_installed_fonts(
+            [
+                "Arial",
+                "Helvetica",
+                "Liberation Sans",
+                "Nimbus Sans",
+                "Microsoft YaHei",
+                "Noto Sans CJK SC",
+                "Noto Sans CJK JP",
+                "DejaVu Sans",
+            ],
+            fallback="DejaVu Sans",
+        )
+    else:
+        mpl.rcParams["font.serif"] = _resolve_installed_fonts(
+            [
+                "Times New Roman",
+                "Liberation Serif",
+                "Nimbus Roman",
+                "DejaVu Serif",
+            ],
+            fallback="DejaVu Serif",
+        )
 
     # Apply palette override if specified
     if palette is not None:
@@ -211,3 +277,37 @@ def savefig(
         )
         saved_paths.append(out_path)
     return saved_paths
+
+
+def load_csv(
+    path: Union[str, Path],
+    encodings: Sequence[str] = ("utf-8-sig", "utf-8", "gbk", "latin1"),
+) -> Tuple[List[str], Dict[str, np.ndarray]]:
+    """Cross-platform numeric CSV loader handling Windows BOM (`utf-8-sig`), `gbk`, and Linux `utf-8`.
+
+    Returns `(headers, columns_dict)` where each column is a 1D `numpy.ndarray` of floats.
+    """
+    file_path = Path(path).expanduser().resolve()
+    last_err: Optional[Exception] = None
+    for enc in encodings:
+        try:
+            with file_path.open("r", encoding=enc, newline="") as handle:
+                reader = csv.DictReader(handle)
+                raw_headers = list(reader.fieldnames or [])
+                if not raw_headers:
+                    raise ValueError(f"CSV file '{file_path}' has no header row.")
+                headers = [h.strip() for h in raw_headers]
+                cols: Dict[str, List[float]] = {h: [] for h in headers}
+                for row in reader:
+                    for raw_h, clean_h in zip(raw_headers, headers):
+                        val_str = (row.get(raw_h) or "").strip()
+                        try:
+                            cols[clean_h].append(float(val_str) if val_str else np.nan)
+                        except ValueError:
+                            cols[clean_h].append(np.nan)
+            return headers, {k: np.asarray(v, dtype=float) for k, v in cols.items()}
+        except UnicodeDecodeError as err:
+            last_err = err
+            continue
+    raise ValueError(f"Failed to decode CSV '{file_path}' with encodings {encodings}: {last_err}")
+

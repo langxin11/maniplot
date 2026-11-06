@@ -11,19 +11,26 @@ description: >-
 
 Whenever the user asks to plot data, generate figures, or visualize experimental results, you **MUST** follow the `maniplot` publication standards below instead of writing ad-hoc Matplotlib styling boilerplate.
 
-## 1. Quick Setup & Library Import
+## 1. Quick Setup & Cross-Platform Library Import (Windows & Linux)
 
-`maniplot` is installed locally at `/home/ming/maniplot`. Always import it at the top of your plotting script (adding `/home/ming/maniplot` to `sys.path` as a fallback in case the active virtualenv/system Python has not installed it in editable mode):
+`maniplot` is registered across Python environments and supports both **Windows** and **Linux**. Always import it at the top of your plotting script (with a cross-platform `Path.home() / "maniplot"` fallback in case a fresh virtualenv is used):
 
 ```python
 import sys
 from pathlib import Path
-if "/home/ming/maniplot" not in sys.path:
-    sys.path.insert(0, "/home/ming/maniplot")
+
+for _candidate in (Path.home() / "maniplot", Path(__file__).resolve().parent):
+    if (_candidate / "maniplot" / "__init__.py").exists() and str(_candidate) not in sys.path:
+        sys.path.insert(0, str(_candidate))
 
 import maniplot as mplt
 import matplotlib.pyplot as plt
 import numpy as np
+```
+
+When loading CSV logs exported from either Windows (Excel/MATLAB `utf-8-sig` BOM or `gbk`) or Linux (ROS 2 / Franka FCI `utf-8`), prefer `mplt.load_csv(path)` to avoid cross-platform encoding or header whitespace errors:
+```python
+headers, data = mplt.load_csv("experiment_log.csv")
 ```
 
 ## 2. Selecting the Style Preset
